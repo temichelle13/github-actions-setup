@@ -1,0 +1,108 @@
+openapi: 3.1.0
+info:
+  title: GitHub Repository API
+  description: API for viewing and editing GitHub repositories.
+  version: 1.0.0
+  termsOfService: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
+servers:
+  - url: https://api.github.com
+    description: GitHub API server
+paths:
+  /user/repos:
+    get:
+      operationId: listUserRepos
+      summary: List repositories for the authenticated user
+      description: Lists repositories that the authenticated user has explicit permission to access.
+      responses:
+        "200":
+          description: A list of repositories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Repository'
+  /repos/{owner}/{repo}:
+    get:
+      operationId: getRepo
+      summary: Get a repository
+      description: Fetches a repository by its owner and repository name.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Repository details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+    patch:
+      operationId: updateRepo
+      summary: Update a repository
+      description: Updates the details of a repository.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryUpdate'
+      responses:
+        "200":
+          description: Repository updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Repository:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        full_name:
+          type: string
+        private:
+          type: boolean
+        description:
+          type: string
+        url:
+          type: string
+    RepositoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        private:
+          type: boolean
+security:
+  - bearerAuth: []
