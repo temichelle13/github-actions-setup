@@ -14,22 +14,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Run tests
-      run: npm test
-
     - name: Authenticate with GitHub API
       id: authenticate
+      env:
+        GH_APP_CLIENT_ID: ${{ secrets.GH_APP_CLIENT_ID }}
+        GH_APP_CLIENT_SECRET: ${{ secrets.GH_APP_CLIENT_SECRET }}
       run: |
-        CLIENT_ID=${{ secrets.GH_APP_CLIENT_ID }}
-        CLIENT_SECRET=${{ secrets.GH_APP_CLIENT_SECRET }}
+        CLIENT_ID=${{ env.GH_APP_CLIENT_ID }}
+        CLIENT_SECRET=${{ env.GH_APP_CLIENT_SECRET }}
         TOKEN=$(curl -u $CLIENT_ID:$CLIENT_SECRET -d '{"scopes":["repo", "user"], "note":"GitHub Action"}' https://api.github.com/authorizations | jq -r '.token')
         echo "GITHUB_TOKEN=$TOKEN" >> $GITHUB_ENV
 
